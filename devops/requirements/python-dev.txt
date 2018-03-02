@@ -1,0 +1,4 @@
+-r python.txt
+
+# dev tools
+ipython==6.2.1

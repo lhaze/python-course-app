@@ -12,20 +12,21 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 import os
 
-from pca.utils.config import env_var
+from pca.utils.config import env_var, path, trueish
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = path(__file__, '..', '..')
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'g)*7ep419lml2_8aooi_&2%@mf0ye=gfr&tzv&knu7)z$qrs3e'
+SECRET_KEY = env_var('DJANGO_SECRET_KEY', 'g)*7ep419lml2_8aooi_&2%@mf0ye=gfr&tzv&knu7)z$qrs3e')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = trueish(env_var('DJANGO_DEBUG', False))
 
 ALLOWED_HOSTS = []
 
@@ -39,6 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'django_extensions',
 
     'pca.users',
 ]
@@ -58,7 +61,7 @@ ROOT_URLCONF = 'pca.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')]
+        'DIRS': [path(BASE_DIR, 'templates')]
         ,
         'APP_DIRS': True,
         'OPTIONS': {
@@ -81,7 +84,7 @@ WSGI_APPLICATION = 'pca.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': path(BASE_DIR, 'db.sqlite3'),
     }
 }
 
