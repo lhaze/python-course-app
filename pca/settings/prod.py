@@ -10,20 +10,21 @@ https://docs.djangoproject.com/en/2.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.0/ref/settings/
 """
-import os
+import django_heroku
 
 from pca.utils.config import env_var, path, trueish
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = path(__file__, '..', '..')
+BASE_DIR = path(__file__, '..', '..', '..')
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env_var('DJANGO_SECRET_KEY', 'g)*7ep419lml2_8aooi_&2%@mf0ye=gfr&tzv&knu7)z$qrs3e')
+# this should be changed by django-heroku or dotenv auto-configured
+SECRET_KEY = env_var('SECRET_KEY', 'CHANGE ME!!!')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = trueish(env_var('DJANGO_DEBUG', False))
@@ -75,7 +76,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'pca.wsgi.application'
+WSGI_APPLICATION = 'wsgi.application'
 
 
 # Database
@@ -87,7 +88,6 @@ DATABASES = {
         'NAME': path(BASE_DIR, 'db.sqlite3'),
     }
 }
-
 
 AUTH_USER_MODEL = 'users.User'
 
@@ -120,3 +120,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+# Configure Django App for Heroku.
+django_heroku.settings(locals())

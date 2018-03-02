@@ -1,0 +1,4 @@
+-r python.txt
+
+gunicorn==19.7.1
+django-heroku==0.3.1

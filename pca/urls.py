@@ -17,8 +17,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
+from pca.utils.config import env_var
+
 
 urlpatterns = [
     path('users/', include('pca.users.urls')),
-    path('admin/', admin.site.urls),
+    path('admin-{}/'.format(env_var('DJANGO_ADMIN_PATH')), admin.site.urls),
 ]

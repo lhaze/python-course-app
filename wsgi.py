@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 WSGI config for python_course_app project.
 
@@ -13,5 +14,5 @@ from django.core.wsgi import get_wsgi_application
 
 
 dotenv.read_dotenv()
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "pca.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "pca.settings.prod")
 application = get_wsgi_application()
