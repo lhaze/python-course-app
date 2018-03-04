@@ -121,6 +121,28 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+LOGGING = {}
 
 # Configure Django App for Heroku.
 django_heroku.settings(locals())
+
+LOGGING['loggers'] = {
+    'django': {
+        'handlers': ['console'],
+        'level': 'INFO',
+        'propagate': False,
+    },
+    'pca': {
+        'handlers': ['console'],
+        'level': 'INFO',
+        'propagate': False,
+    },
+    '': {
+        'handlers': ['console'],
+        'level': 'ERROR',
+    }
+}
+LOGGING['formatters']['verbose'] = {
+    'format': '%(asctime)s.%(msecs)03d|%(process)d|%(levelname)s|%(pathname)s:%(lineno)s| %(message)s',
+    'datefmt': '%Y-%m-%d %H:%M:%S',
+}
