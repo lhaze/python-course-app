@@ -106,5 +106,8 @@ ENV/
 # vagrant
 .vagrant
 
-# databases
+# dev databases
 db.*
+
+# JS/CSS dev build artefacts
+*.map
