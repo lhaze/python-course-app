@@ -62,8 +62,7 @@ ROOT_URLCONF = 'pca.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [path(BASE_DIR, 'templates')]
-        ,
+        'DIRS': [path(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
