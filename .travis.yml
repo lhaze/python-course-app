@@ -1,0 +1,13 @@
+language: python
+python:
+- '3.6'
+install: pip install -r devops/requirements/python-test.txt
+script:
+- pytest
+deploy:
+  provider: heroku
+  api_key:
+    secure: cZXAmoALlH3O4y7rtW8fC+lCloiPdDS0O3PC3cAs7rfw6I84zkabCQod59S9w7pk4ETDZE+s0oIWqkZWxqwrBgmkvXdVkayRDD8G9Rs82fmL54uHD1MBCztJYNjxg2SRuJowcWDhkUaOB+jjnx/+W2qmusUUbJa1/F7DbSXL5tpxYLMDiWXgawt+uAlYHIZwVZNjNaIPNe7eMCMxph6nRBJiM53TszseRyxcQKrZGJG+IleShDMKDF+577EQ0/vel83pzY8AAHhyaVleVy1pdynM4rahfRLo6UKkxJZcdMl06mQkSYmiY0bL5ucN8gOvvHHEMi/VtJDqmOoVf8euMz4da38gGfSWixQWQfuPOLfctN1HyHLfESDaEwUSWZf2yt5B4gm3+0ytE2rmtigEHebmRiPUGUzG+HlrcuB7fxAmuHO4Uvndg3kXxNSaE+waEhzCP/6k/ibKD2sdianuHWYpNqkaw2FU5Zo0u6JUSHgJEh1/L8hsUlWRF7X9zHuvZU8faJ/+/XtK1oQ8JaSyDcoLSORihqS8rizj5tbxFxpgeSiWUIMwe6Sr6+tJyf7qYxyByYVwzSzY9FZba1R2tVsANHoyi3Vdb0iIVYaccXiLzH6r0KClJCmbX+mpXjEzPTtzFuzjQ2OqOahZ60MgV9/+8APNaBnDZHMXrfozsj0=
+  app:
+    yellow: pca-yellow
+    green: pca-green

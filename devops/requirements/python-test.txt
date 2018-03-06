@@ -1,0 +1,5 @@
+-r python.txt
+
+# test tools
+pytest==3.4.2
+pytest-flake8==0.9.1
