@@ -45,6 +45,7 @@ class User(auth_models.AbstractBaseUser, auth_models.PermissionsMixin):
         # validators=[email_validator] if email_validator else None,
         unique=True
     )
+    display_name = 'display_name'
     is_staff = models.BooleanField(
         _('staff status'),
         default=False,
