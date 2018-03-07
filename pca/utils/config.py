@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import json
 import os
 
 
@@ -8,6 +9,16 @@ def path(*args):
 
 def env_var(key, default=''):
     return os.environ.get(key, default)
+
+
+def env_json_var(key, default=None):
+    env_value = env_var(key)
+    if not env_value:
+        return default
+    try:
+        return json.loads(env_value)
+    except json.JSONDecodeError:
+        return default
 
 
 def trueish(value):

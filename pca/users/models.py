@@ -1,8 +1,14 @@
 # -*- coding: utf-8 -*-
 from django.contrib.auth import models as auth_models
+from django.core import validators as core_validators
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+
+from .validators import (
+    DisplayNameBlacklistValidator,
+    EmailBlacklistValidator,
+)
 
 
 class UserManager(auth_models.BaseUserManager):
@@ -39,13 +45,27 @@ class UserManager(auth_models.BaseUserManager):
 
 class User(auth_models.AbstractBaseUser, auth_models.PermissionsMixin):
 
-    email_validator = None
+    USERNAME_FIELD = 'email'
+    email_validators = [
+        core_validators.validate_email,
+        EmailBlacklistValidator(),
+    ]
+
+    display_name_validators = [
+        DisplayNameBlacklistValidator(),
+    ]
+
     email = models.EmailField(
         _('email address'),
-        # validators=[email_validator] if email_validator else None,
+        validators=email_validators,
         unique=True
     )
-    display_name = 'display_name'
+    display_name = models.CharField(
+        _('display name'),
+        validators=display_name_validators,
+        max_length=32,
+        unique=True
+    )
     is_staff = models.BooleanField(
         _('staff status'),
         default=False,
@@ -53,7 +73,7 @@ class User(auth_models.AbstractBaseUser, auth_models.PermissionsMixin):
     )
     is_active = models.BooleanField(
         _('active'),
-        default=True,
+        default=False,
         help_text=_(
             'Designates whether this user should be treated as active. '
             'Unselect this instead of deleting accounts.'
@@ -66,6 +86,3 @@ class User(auth_models.AbstractBaseUser, auth_models.PermissionsMixin):
         verbose_name_plural = _('users')
 
     objects = UserManager()
-
-    EMAIL_FIELD = 'email'
-    USERNAME_FIELD = 'email'

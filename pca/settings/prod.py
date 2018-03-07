@@ -10,14 +10,16 @@ https://docs.djangoproject.com/en/2.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.0/ref/settings/
 """
+import disposable_email_domains
 import django_heroku
+import dotenv
 
-from pca.utils.config import env_var, path, trueish
+from pca.utils.config import env_var, path, trueish, env_json_var
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = path(__file__, '..', '..', '..')
-
+dotenv.read_dotenv(path(BASE_DIR, '.env'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
@@ -151,3 +153,8 @@ LOGGING['formatters']['verbose'] = {
     'format': '%(asctime)s.%(msecs)03d|%(process)d|%(levelname)s|%(pathname)s:%(lineno)s| %(message)s',
     'datefmt': '%Y-%m-%d %H:%M:%S',
 }
+
+
+# Custom webapp configuration
+USER_EMAIL_DOMAIN_BLACKLIST = disposable_email_domains.blacklist
+USER_DISPLAY_NAME_BLACKLIST = set(env_json_var('USER_DISPLAY_NAME_BLACKLIST', ()))
