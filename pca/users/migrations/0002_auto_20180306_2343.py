@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='user',
             name='display_name',
-            field=models.CharField(default='', max_length=32, unique=True, validators=[pca.users.validators.DisplayNameBlacklistValidator()], verbose_name='display name'),
+            field=models.CharField(default='', max_length=32, unique=True, validators=[pca.users.validators.NameBlacklistValidator()], verbose_name='display name'),
             preserve_default=False,
         ),
         migrations.AlterField(

@@ -157,4 +157,4 @@ LOGGING['formatters']['verbose'] = {
 
 # Custom webapp configuration
 USER_EMAIL_DOMAIN_BLACKLIST = disposable_email_domains.blacklist
-USER_DISPLAY_NAME_BLACKLIST = set(env_json_var('USER_DISPLAY_NAME_BLACKLIST', ()))
+USER_NAME_BLACKLIST = set(env_json_var('USER_NAME_BLACKLIST', ()))

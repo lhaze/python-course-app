@@ -10,20 +10,20 @@ from django.utils.translation import gettext_lazy as _
 from .models import User
 
 
-class UserCreationForm(BaseUserCreationForm):
+class AdminUserCreationForm(BaseUserCreationForm):
 
     class Meta:
         model = User
-        fields = ('email', 'display_name')
+        fields = ('email', 'name')
 
 
-class UserChangeForm(BaseUserChangeForm):
+class AdminUserChangeForm(BaseUserChangeForm):
 
     class Meta:
         model = User
         fields = (
             'email',
-            'display_name',
+            'name',
             'password',
             'is_active',
             'is_superuser'
@@ -33,27 +33,27 @@ class UserChangeForm(BaseUserChangeForm):
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
     # The forms to add and change user instances
-    form = UserChangeForm
-    add_form = UserCreationForm
+    form = AdminUserChangeForm
+    add_form = AdminUserCreationForm
 
     # The fields to be used in displaying the User model.
     # These override the definitions on the base UserAdmin
     # that reference specific fields on auth.User.
     list_display = (
         'email',
-        'display_name',
+        'name',
         'is_superuser',
         'is_staff',
         'date_joined'
     )
     list_filter = ('is_superuser', 'is_staff', 'is_active', 'groups')
-    search_fields = ('email', 'display_name')
+    search_fields = ('email', 'name')
     ordering = ('email', 'date_joined')
     filter_horizontal = ('groups', 'user_permissions',)
 
     readonly_fields = ('last_login',)
     fieldsets = (
-        (_('User info'), {'fields': ('email', 'display_name', 'password')}),
+        (_('User info'), {'fields': ('email', 'name', 'password')}),
         (_('Permissions'), {'fields': ('is_superuser', 'is_staff')}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
     )

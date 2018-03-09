@@ -1,14 +1,11 @@
 # -*- coding: utf-8 -*-
 from django.contrib.auth import models as auth_models
-from django.core import validators as core_validators
+from django.core.validators import EmailValidator
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from .validators import (
-    DisplayNameBlacklistValidator,
-    EmailBlacklistValidator,
-)
+from .validators import EmailBlacklistValidator
 
 
 class UserManager(auth_models.BaseUserManager):
@@ -46,24 +43,20 @@ class UserManager(auth_models.BaseUserManager):
 class User(auth_models.AbstractBaseUser, auth_models.PermissionsMixin):
 
     USERNAME_FIELD = 'email'
-    email_validators = [
-        core_validators.validate_email,
+    NAME_MAX_LEN = 32
+    EMAIL_VALIDATORS = [
+        EmailValidator(),
         EmailBlacklistValidator(),
-    ]
-
-    display_name_validators = [
-        DisplayNameBlacklistValidator(),
     ]
 
     email = models.EmailField(
         _('email address'),
-        validators=email_validators,
+        validators=EMAIL_VALIDATORS,
         unique=True
     )
-    display_name = models.CharField(
-        _('display name'),
-        validators=display_name_validators,
-        max_length=32,
+    name = models.CharField(
+        _('displayed name'),
+        max_length=NAME_MAX_LEN,
         unique=True
     )
     is_staff = models.BooleanField(

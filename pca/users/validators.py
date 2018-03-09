@@ -38,16 +38,22 @@ class BlacklistValidator:
 
 
 class EmailBlacklistValidator(BlacklistValidator):
-    blacklist = settings.USER_EMAIL_DOMAIN_BLACKLIST
     message = _('Enter a valid email address.')
+
+    @property
+    def blacklist(self):
+        return settings.USER_EMAIL_DOMAIN_BLACKLIST
 
     def get_validated_value(self, value):
         return value.rsplit('@', 1)[1]
 
 
-class DisplayNameBlacklistValidator(BlacklistValidator):
-    blacklist = settings.USER_DISPLAY_NAME_BLACKLIST
+class NameBlacklistValidator(BlacklistValidator):
     message = _('Enter a valid display name.')
+
+    @property
+    def blacklist(self):
+        return settings.USER_NAME_BLACKLIST
 
     def get_validated_value(self, value):
         return value
