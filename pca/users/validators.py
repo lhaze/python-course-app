@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import abc
 
+from confusable_homoglyphs import confusables
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.utils.deconstruct import deconstructible
@@ -49,7 +50,7 @@ class EmailBlacklistValidator(BlacklistValidator):
 
 
 class NameBlacklistValidator(BlacklistValidator):
-    message = _('Enter a valid display name.')
+    message = _('Enter a valid name.')
 
     @property
     def blacklist(self):
@@ -57,3 +58,12 @@ class NameBlacklistValidator(BlacklistValidator):
 
     def get_validated_value(self, value):
         return value
+
+
+class NameUnicodeValidator:
+    code = 'mixed_unicode'
+    message = _('Enter a valid name.')
+
+    def __call__(self, value):
+        if bool(confusables.is_dangerous(value, preferred_aliases=['latin'])):
+            raise ValidationError(self.message, code=self.code)

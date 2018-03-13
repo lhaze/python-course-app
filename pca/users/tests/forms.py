@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
 import pytest
+from unittest import mock
 
 from pca.utils.tests import get_error_codes
 
-from ..forms import UserCreationForm
+from ..forms import (
+    AuthenticationForm,
+    UserCreationForm,
+)
 
 
 @pytest.mark.django_db
@@ -91,3 +95,70 @@ class TestUserCreationForm:
         form = UserCreationForm(data)
         assert not form.is_valid()
         assert get_error_codes(form) == {'email': ['blacklist']}
+
+
+@pytest.mark.django_db
+class TestAuthenticationForm:
+
+    session_key = 'my_session_key'
+    password_field = 'f81504bad8fe7a1eb'
+    data = {
+        'username': 'some_user@pca.org',
+        password_field: 'my_password'
+    }
+
+    @pytest.fixture
+    def user(self):
+        from ..models import User
+        return User(email=self.data['username'], is_active=True)
+
+    @pytest.fixture(autouse=True)
+    def authenticate(self, user):
+        with mock.patch('pca.users.forms.authenticate') as mocked_authenticate:
+            mocked_authenticate.return_value = user
+            yield mocked_authenticate
+
+    @pytest.fixture
+    def mark_session(self):
+        with mock.patch('pca.users.forms.mark_session_unauthorized') as mocked_mark_session:
+            yield mocked_mark_session
+
+    @pytest.fixture
+    def req(self):
+        request = mock.MagicMock()
+        request.session.session_key = self.session_key
+        return request
+
+    def test_valid_attempt(self, req, mark_session):
+        """form.data is ok -- everything is fine"""
+        form = AuthenticationForm(req, self.data)
+        assert form.is_valid()
+        assert not form.unauthorized_attempt
+        mark_session.assert_not_called()
+
+    def test_unauthorized_attempt(self, req, mark_session):
+        """Honeypot field `password` got a value -- be valid but do sth about that"""
+        data = dict(self.data, password='fake_password')
+        form = AuthenticationForm(req, data)
+        assert form.is_valid()
+        assert form.unauthorized_attempt
+        mark_session.assert_called_once_with(
+            req, data['username'], data['password'], data[self.password_field])
+
+    def test_invalid_attempt(self, req, authenticate, mark_session):
+        """Honeypot is not filled, but credentials are invalid"""
+        authenticate.return_value = None
+        form = AuthenticationForm(req, self.data)
+        assert not form.is_valid()
+        assert not form.unauthorized_attempt
+        mark_session.assert_not_called()
+        assert get_error_codes(form) == {'__all__': ['invalid_login']}
+
+    def test_inactive(self, req, user, mark_session):
+        """Credentials are ok and the user is inactive"""
+        user.is_active = False
+        form = AuthenticationForm(req, self.data)
+        assert not form.is_valid()
+        assert not form.unauthorized_attempt
+        mark_session.assert_not_called()
+        assert get_error_codes(form) == {'__all__': ['inactive']}

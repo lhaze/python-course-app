@@ -26,7 +26,10 @@ dotenv.read_dotenv(path(BASE_DIR, '.env'))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # this should be changed by django-heroku or dotenv auto-configured
-SECRET_KEY = env_var('SECRET_KEY', 'CHANGE ME!!!')
+SECRET_KEY = env_var('SECRET_KEY', '333w=r#mhn$r6n_#-*6#p2rd#!_0ly0=*vd=x1@((i+04@0=31')
+# Not so secret key (the real secret should be kept only for da real secrets like
+# generation of the session keys)
+NON_SECRET_KEY = int(env_var('NON_SECRET_KEY', '20141025'))
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = trueish(env_var('DJANGO_DEBUG', False))
@@ -91,6 +94,7 @@ DATABASES = {
 }
 
 AUTH_USER_MODEL = 'users.User'
+AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend']
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
