@@ -44,6 +44,13 @@ class TestUserCreationForm:
         assert not form.is_valid()
         assert get_error_codes(form) == {'name': ['min_length']}
 
+    def test_name_with_homoglyph(self):
+        """Name has a confusable homoglyph -- it should be error"""
+        data = dict(self.data, name='Alloρ')  # greek ro which might be confusing with latin p
+        form = UserCreationForm(data)
+        assert not form.is_valid()
+        assert get_error_codes(form) == {'name': ['mixed_unicode']}
+
     def test_password_mismatch(self):
         data = dict(self.data, password2='password2')
         form = UserCreationForm(data)

@@ -1,2 +1,5 @@
 # -*- coding: utf-8 -*-
-urlpatterns = []
+urlpatterns = [
+    # dashboard aka "me"
+    #
+]
