@@ -72,15 +72,19 @@ class AuthenticationForm(auth_forms.AuthenticationForm):
     @cached_property
     def _get_password_field_key(self):
         """Get hash from session_key"""
+        if not self.request.session.session_key:
+            # force creation of session when session isn't already created
+            self.request.session.save()
         hash = xxh64(self.request.session.session_key, seed=settings.NON_SECRET_KEY).hexdigest()
         return "f{}".format(hash)
 
     def clean(self):
+        import pdb; pdb.set_trace()
         username = self.cleaned_data.get('username')
         real_password = self.cleaned_data.get(self._get_password_field_key)
         fake_password = self.cleaned_data.get('password')
 
-        if fake_password:
+        if fake_password is not None:
             self.fake_password_provided(username, fake_password, real_password)
         elif username is not None and real_password:
             self.user_cache = authenticate(self.request, username=username, password=real_password)

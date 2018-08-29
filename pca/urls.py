@@ -25,5 +25,5 @@ urlpatterns = [
     path('', TemplateView.as_view(template_name='index.html')),
     path('admin-{}/'.format(env_var('DJANGO_ADMIN_PATH', 'foo')), admin.site.urls),
     path('auth/', include('pca.users.auth_urls')),
-    path('user/', include('pca.users.urls')),
+    path('users/', include('pca.users.urls')),
 ]
