@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import unicodedata
 
+from crispy_forms.layout import Layout
 from django import forms
 from django.conf import settings
 from django.contrib.auth import (
@@ -12,6 +13,7 @@ from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 from xxhash import xxh64
 
+from pca.utils.forms import CrispyHelper
 from .services import mark_session_unauthorized
 from .validators import NameBlacklistValidator, NameUnicodeValidator
 
@@ -63,28 +65,37 @@ class AuthenticationForm(auth_forms.AuthenticationForm):
         The form data comes in via the standard 'data' kwarg.
         """
         super().__init__(request, *args, **kwargs)
-        self.fields[self._get_password_field_key] = forms.CharField(
+        self.fields[self._password_field_key] = forms.CharField(
             label=_("Password"),
             strip=False,
             widget=forms.PasswordInput,
         )
+        self.helper = CrispyHelper(
+            self,
+            field_class="textinput textInput form-control",
+            form_tag=False,
+            layout=Layout(
+                'username',
+                'password',
+                self._password_field_key,
+            )
+        )
 
     @cached_property
-    def _get_password_field_key(self):
+    def _password_field_key(self):
         """Get hash from session_key"""
         if not self.request.session.session_key:
             # force creation of session when session isn't already created
             self.request.session.save()
-        hash = xxh64(self.request.session.session_key, seed=settings.NON_SECRET_KEY).hexdigest()
-        return "f{}".format(hash)
+        hash_ = xxh64(self.request.session.session_key, seed=settings.NON_SECRET_KEY).hexdigest()
+        return "f{}".format(hash_)
 
     def clean(self):
-        import pdb; pdb.set_trace()
         username = self.cleaned_data.get('username')
-        real_password = self.cleaned_data.get(self._get_password_field_key)
+        real_password = self.cleaned_data.get(self._password_field_key)
         fake_password = self.cleaned_data.get('password')
 
-        if fake_password is not None:
+        if fake_password:
             self.fake_password_provided(username, fake_password, real_password)
         elif username is not None and real_password:
             self.user_cache = authenticate(self.request, username=username, password=real_password)

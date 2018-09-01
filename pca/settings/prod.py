@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'crispy_forms',
     'django_extensions',
 
     'pca.users',
@@ -79,6 +80,7 @@ TEMPLATES = [
         },
     },
 ]
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 WSGI_APPLICATION = 'wsgi.application'
 
@@ -151,7 +153,8 @@ LOGGING['loggers'] = {
     }
 }
 LOGGING['formatters']['verbose'] = {
-    'format': '%(asctime)s.%(msecs)03d|%(process)d|%(levelname)s|%(pathname)s:%(lineno)s| %(message)s',
+    'format':
+        '%(asctime)s.%(msecs)03d|%(process)d|%(levelname)s|%(pathname)s:%(lineno)s| %(message)s',
     'datefmt': '%Y-%m-%d %H:%M:%S',
 }
 
