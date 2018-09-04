@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import unicodedata
 
-from crispy_forms.layout import Layout
+from crispy_forms.layout import Div, Layout
 from django import forms
 from django.conf import settings
 from django.contrib.auth import (
@@ -72,12 +72,15 @@ class AuthenticationForm(auth_forms.AuthenticationForm):
         )
         self.helper = CrispyHelper(
             self,
-            field_class="textinput textInput form-control",
+            field_class="textinput textInput",
             form_tag=False,
             layout=Layout(
                 'username',
-                'password',
                 self._password_field_key,
+                Div(
+                    'password',
+                    style='display: none'
+                ),
             )
         )
 

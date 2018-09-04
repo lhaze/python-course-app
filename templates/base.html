@@ -19,8 +19,7 @@
         <div class="page-header" id="banner">
           <div class="row">
             <div class="col-lg-8 col-md-7 col-sm-6">
-              <h1>PCA</h1>
-              <p class="lead">Welcome!</p>
+              <h1>Welcome!</h1>
             </div>
           </div>
         </div>
@@ -35,7 +34,7 @@
                 <h1 class="display-3">Join the beta-program!</h1>
                 <p class="lead">If you think you are interested in PCA program, follow the link bellow and contact us.</p>
                 <p class="lead">
-                  <a class="btn btn-primary btn-lg" href="mailto:pca+join@lhaze.name?subject=I want to join the PCA" role="button">I want to join!</a>
+                  <a class="btn btn-primary btn-lg" href="mailto:{{ settings.get_owner_email('join') }}?subject=I want to join the PCA" role="button">I want to join!</a>
                 </p>
               </div>
               {% endblock main_component %}

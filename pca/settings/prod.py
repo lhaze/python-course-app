@@ -67,7 +67,7 @@ ROOT_URLCONF = 'pca.urls'
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'BACKEND': 'django.template.backends.jinja2.Jinja2',
         'DIRS': [path(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -162,3 +162,9 @@ LOGGING['formatters']['verbose'] = {
 # Custom webapp configuration
 USER_EMAIL_DOMAIN_BLACKLIST = disposable_email_domains.blacklist
 USER_NAME_BLACKLIST = set(env_json_var('USER_NAME_BLACKLIST', ()))
+OWNER_HOMEPAGE = env_var('OWNER_HOMEPAGE', 'https://github.com/pcah')
+OWNER_EMAIL = env_var('CONTACT_EMAIL', 'pca+{}@lhaze.name')
+
+
+def get_owner_email(extension):
+    return OWNER_EMAIL.format(extension)
