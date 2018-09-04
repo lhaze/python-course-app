@@ -22,7 +22,7 @@ from pca.utils.config import env_var
 
 
 urlpatterns = [
-    path('', TemplateView.as_view(template_name='index.html')),
+    path('', TemplateView.as_view(template_name='index.j2'), name='index'),
     path('admin-{}/'.format(env_var('DJANGO_ADMIN_PATH', 'foo')), admin.site.urls),
     path('auth/', include('pca.users.auth_urls')),
     path('users/', include('pca.users.urls')),

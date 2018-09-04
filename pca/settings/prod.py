@@ -49,7 +49,9 @@ INSTALLED_APPS = [
 
     'crispy_forms',
     'django_extensions',
+    'django_jinja',
 
+    'pca.core',
     'pca.users',
 ]
 
@@ -65,17 +67,36 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'pca.urls'
 
+GLOBAL_TEMPLATES_DIR = [path(BASE_DIR, 'templates')]
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.jinja2.Jinja2',
-        'DIRS': [path(BASE_DIR, 'templates')],
+        'BACKEND': 'django_jinja.backend.Jinja2',
+        'DIRS': GLOBAL_TEMPLATES_DIR,
         'APP_DIRS': True,
+        "OPTIONS": {
+            "match_extension": ".j2",
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+
+                'pca.core.context_processors.settings',
+            ],
+        }
+    },
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": GLOBAL_TEMPLATES_DIR,
+        "APP_DIRS": True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+
+                'pca.core.context_processors.settings',
             ],
         },
     },
@@ -164,7 +185,11 @@ USER_EMAIL_DOMAIN_BLACKLIST = disposable_email_domains.blacklist
 USER_NAME_BLACKLIST = set(env_json_var('USER_NAME_BLACKLIST', ()))
 OWNER_HOMEPAGE = env_var('OWNER_HOMEPAGE', 'https://github.com/pcah')
 OWNER_EMAIL = env_var('CONTACT_EMAIL', 'pca+{}@lhaze.name')
+GET_OWNER_EMAIL = lambda extension: OWNER_EMAIL.format(extension)  # noqa
 
 
-def get_owner_email(extension):
-    return OWNER_EMAIL.format(extension)
+TEMPLATE_VISIBLE_SETTINGS = (
+    'OWNER_HOMEPAGE',
+    'OWNER_EMAIL',
+    'GET_OWNER_EMAIL'
+)

@@ -5,4 +5,4 @@ from . import forms
 
 class LoginView(AuthLoginView):
     form_class = forms.AuthenticationForm
-    template_name = 'auth/login.html'
+    template_name = 'auth/login.j2'

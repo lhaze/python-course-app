@@ -1,5 +1,4 @@
-{% extends "base.html" %}
-{% load crispy_forms_tags %}
+{% extends "base.j2" %}
 
 {% block title %} Login{% endblock %}
 {% block main_component %}
@@ -18,7 +17,7 @@
       <span class="span-or">or</span>
     </div>
     <form method="post">
-    {% crispy form %}
+    {{ crispy(form) }}
     <input type="submit" name="log_in" class="btn btn btn-primary" value="Log In">
     <a class="pull-right" href="#">Forgot password?</a>
     </form>
