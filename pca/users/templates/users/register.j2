@@ -1,0 +1,12 @@
+{% extends "base.j2" %}
+
+{% block title %} Login{% endblock %}
+{% block main_component %}
+  <div class="jumbotron">
+    <h3>Please Fill the Form to <b>Sign Up</b></h3>
+    <form method="post">
+    {{ crispy(form) }}
+    <input type="submit" name="submit" class="btn btn btn-primary" value="Sign Up">
+    </form>
+  </div>
+{% endblock main_component %}

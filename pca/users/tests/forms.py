@@ -5,8 +5,8 @@ from unittest import mock
 from pca.utils.tests import get_error_codes
 
 from ..forms import (
-    AuthenticationForm,
-    UserCreationForm,
+    AuthenticateForm,
+    UserCreateForm,
 )
 
 
@@ -26,7 +26,7 @@ class TestUserCreationForm:
         return settings
 
     def test_success(self):
-        form = UserCreationForm(self.data)
+        form = UserCreateForm(self.data)
         assert form.is_valid()
         user = form.save(commit=False)
         assert user.email == self.data['email']
@@ -34,26 +34,26 @@ class TestUserCreationForm:
 
     def test_name_blacklist(self):
         data = dict(self.data, name='admin')
-        form = UserCreationForm(data)
+        form = UserCreateForm(data)
         assert not form.is_valid()
         assert get_error_codes(form) == {'name': ['blacklist']}
 
     def test_name_too_short(self):
         data = dict(self.data, name='adm')
-        form = UserCreationForm(data)
+        form = UserCreateForm(data)
         assert not form.is_valid()
         assert get_error_codes(form) == {'name': ['min_length']}
 
     def test_name_with_homoglyph(self):
         """Name has a confusable homoglyph -- it should be error"""
         data = dict(self.data, name='Alloρ')  # greek ro which might be confusing with latin p
-        form = UserCreationForm(data)
+        form = UserCreateForm(data)
         assert not form.is_valid()
         assert get_error_codes(form) == {'name': ['mixed_unicode']}
 
     def test_password_mismatch(self):
         data = dict(self.data, password2='password2')
-        form = UserCreationForm(data)
+        form = UserCreateForm(data)
         assert not form.is_valid()
         assert get_error_codes(form) == {'password2': ['password_mismatch']}
 
@@ -63,7 +63,7 @@ class TestUserCreationForm:
             password1='user@pca.org',
             password2='user@pca.org',
         )
-        form = UserCreationForm(data)
+        form = UserCreateForm(data)
         assert not form.is_valid()
         assert get_error_codes(form) == {'password2': ['password_too_similar']}
 
@@ -73,7 +73,7 @@ class TestUserCreationForm:
             password1='asdzxc',
             password2='asdzxc',
         )
-        form = UserCreationForm(data)
+        form = UserCreateForm(data)
         assert not form.is_valid()
         assert get_error_codes(form) == {'password2': ['password_too_short']}
 
@@ -83,7 +83,7 @@ class TestUserCreationForm:
             password1='password',
             password2='password',
         )
-        form = UserCreationForm(data)
+        form = UserCreateForm(data)
         assert not form.is_valid()
         assert get_error_codes(form) == {'password2': ['password_too_common']}
 
@@ -93,13 +93,13 @@ class TestUserCreationForm:
             password1='18273645',
             password2='18273645',
         )
-        form = UserCreationForm(data)
+        form = UserCreateForm(data)
         assert not form.is_valid()
         assert get_error_codes(form) == {'password2': ['password_entirely_numeric']}
 
     def test_email_blacklist(self):
         data = dict(self.data, email='some_guy@10mail.org')
-        form = UserCreationForm(data)
+        form = UserCreateForm(data)
         assert not form.is_valid()
         assert get_error_codes(form) == {'email': ['blacklist']}
 
@@ -138,7 +138,7 @@ class TestAuthenticationForm:
 
     def test_valid_attempt(self, req, mark_session):
         """form.data is ok -- everything is fine"""
-        form = AuthenticationForm(req, self.data)
+        form = AuthenticateForm(req, self.data)
         assert form.is_valid()
         assert not form.unauthorized_attempt
         mark_session.assert_not_called()
@@ -146,7 +146,7 @@ class TestAuthenticationForm:
     def test_unauthorized_attempt(self, req, mark_session):
         """Honeypot field `password` got a value -- be valid but do sth about that"""
         data = dict(self.data, password='fake_password')
-        form = AuthenticationForm(req, data)
+        form = AuthenticateForm(req, data)
         assert form.is_valid()
         assert form.unauthorized_attempt
         mark_session.assert_called_once_with(
@@ -155,7 +155,7 @@ class TestAuthenticationForm:
     def test_invalid_attempt(self, req, authenticate, mark_session):
         """Honeypot is not filled, but credentials are invalid"""
         authenticate.return_value = None
-        form = AuthenticationForm(req, self.data)
+        form = AuthenticateForm(req, self.data)
         assert not form.is_valid()
         assert not form.unauthorized_attempt
         mark_session.assert_not_called()
@@ -164,7 +164,7 @@ class TestAuthenticationForm:
     def test_inactive(self, req, user, mark_session):
         """Credentials are ok and the user is inactive"""
         user.is_active = False
-        form = AuthenticationForm(req, self.data)
+        form = AuthenticateForm(req, self.data)
         assert not form.is_valid()
         assert not form.unauthorized_attempt
         mark_session.assert_not_called()

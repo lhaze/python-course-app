@@ -26,7 +26,11 @@ class NameField(forms.CharField):
         return unicodedata.normalize('NFKC', value)
 
 
-class UserCreationForm(auth_forms.UserCreationForm):
+class UserCreateForm(auth_forms.UserCreationForm):
+
+    class Meta:
+        model = User
+        fields = ('email',)
 
     NAME_MIN_LEN = 5
     NAME_MAX_LEN = User.NAME_MAX_LEN
@@ -42,15 +46,28 @@ class UserCreationForm(auth_forms.UserCreationForm):
         validators=NAME_VALIDATORS
     )
 
-    class Meta:
-        model = User
-        fields = ('email',)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = CrispyHelper(
+            self,
+            field_class="textinput textInput",
+            form_tag=False,
+            # layout=Layout(
+            #     'username',
+            #     self._password_field_key,
+            #     Div(
+            #         'password',
+            #         style='display: none'
+            #     ),
+            # )
+        )
 
 
-class AuthenticationForm(auth_forms.AuthenticationForm):
+class AuthenticateForm(auth_forms.AuthenticationForm):
     """
     Authentication form with honeypot password field.
     """
+    user = None
     password = forms.CharField(
         label=_("Password"),
         required=False,
@@ -101,15 +118,15 @@ class AuthenticationForm(auth_forms.AuthenticationForm):
         if fake_password:
             self.fake_password_provided(username, fake_password, real_password)
         elif username is not None and real_password:
-            self.user_cache = authenticate(self.request, username=username, password=real_password)
-            if self.user_cache is None:
+            self.user = authenticate(self.request, username=username, password=real_password)
+            if self.user is None:
                 raise forms.ValidationError(
                     self.error_messages['invalid_login'],
                     code='invalid_login',
                     params={'username': self.username_field.verbose_name},
                 )
             else:
-                self.confirm_login_allowed(self.user_cache)
+                self.confirm_login_allowed(self.user)
 
         return self.cleaned_data
 

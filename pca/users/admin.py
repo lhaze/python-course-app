@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.contrib import admin
+from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import (
     UserCreationForm as BaseUserCreationForm,
@@ -7,7 +8,7 @@ from django.contrib.auth.forms import (
 )
 from django.utils.translation import gettext_lazy as _
 
-from .models import User
+User = get_user_model()
 
 
 class AdminUserCreationForm(BaseUserCreationForm):

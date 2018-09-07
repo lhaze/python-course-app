@@ -3,7 +3,7 @@
 {% block title %} Login{% endblock %}
 {% block main_component %}
   <div class="jumbotron">
-    <h3>Please Log In, or <a href="#">Sign Up</a></h3>
+    <h3>Please Log In, or <a href="{{ url('auth:register') }}">Sign Up</a></h3>
     <div class="row">
       <div class="col-xs-6 col-sm-6 col-md-6">
         <a href="#" class="btn btn-lg btn-primary btn-block"><i class="fa fa-facebook"></i> Facebook</a>
