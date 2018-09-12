@@ -130,7 +130,7 @@ class TestAuthenticationForm:
 
     @pytest.fixture
     def mark_session(self):
-        with mock.patch('pca.users.forms.mark_session_unauthorized') as mocked_mark_session:
+        with mock.patch('pca.users.forms.mark_login_suspicious') as mocked_mark_session:
             yield mocked_mark_session
 
     @pytest.fixture

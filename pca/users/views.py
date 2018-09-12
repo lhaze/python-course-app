@@ -1,10 +1,12 @@
+from django.conf import settings
 from django.contrib.auth import views as auth_views
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
+from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
-from django.views import generic as generic_views
 
-from . import forms
+from pca.core.views import ActionView, ActionGetView
+from . import forms, services
 
 
 class LoginView(auth_views.LoginView):
@@ -12,15 +14,32 @@ class LoginView(auth_views.LoginView):
     template_name = 'users/login.j2'
 
 
-class RegisterView(generic_views.CreateView):
+class RegisterView(ActionView):
+
+    login_required = False
     form_class = forms.UserCreateForm
     template_name = 'users/register.j2'
+    success_url = settings.LOGIN_REDIRECT_URL
+    disallowed_url = reverse_lazy('auth:registration_blocked')
 
-    def form_valid(self, form):
+    def is_action_allowed(self):
+        return services.is_registration_allowed()
+
+    def action(self, form, *args, **kwargs):
         try:
-            return super().form_valid(form)
+            return services.register(self.request, form)
         except IntegrityError:
             form.add_error(None, ValidationError(
                 _('An error occurred. Please, try again.'), code='constraints'
             ))
-            return self.form_invalid(form)
+            raise
+
+
+class ActivationView(ActionGetView):
+
+    login_required = False
+    template_name = 'django_registration/activation_failed.html'
+    success_url = 'users:me'
+
+    def action(self):
+        return services.activate(*self.args, **self.kwargs)

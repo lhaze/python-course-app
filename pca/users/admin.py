@@ -1,24 +1,21 @@
 # -*- coding: utf-8 -*-
 from django.contrib import admin
 from django.contrib.auth import get_user_model
-from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from django.contrib.auth.forms import (
-    UserCreationForm as BaseUserCreationForm,
-    UserChangeForm as BaseUserChangeForm,
-)
+from django.contrib.auth import admin as auth_admin
+from django.contrib.auth import forms as auth_forms
 from django.utils.translation import gettext_lazy as _
 
 User = get_user_model()
 
 
-class AdminUserCreationForm(BaseUserCreationForm):
+class AdminUserCreateForm(auth_forms.UserCreationForm):
 
     class Meta:
         model = User
         fields = ('email', 'name')
 
 
-class AdminUserChangeForm(BaseUserChangeForm):
+class AdminUserChangeForm(auth_forms.UserChangeForm):
 
     class Meta:
         model = User
@@ -32,10 +29,10 @@ class AdminUserChangeForm(BaseUserChangeForm):
 
 
 @admin.register(User)
-class UserAdmin(BaseUserAdmin):
+class UserAdmin(auth_admin.UserAdmin):
     # The forms to add and change user instances
     form = AdminUserChangeForm
-    add_form = AdminUserCreationForm
+    add_form = AdminUserCreateForm
 
     # The fields to be used in displaying the User model.
     # These override the definitions on the base UserAdmin

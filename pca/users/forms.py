@@ -15,7 +15,7 @@ from django_registration import validators as django_registration_validators
 from xxhash import xxh64
 
 from pca.utils.forms import CrispyHelper
-from .services import mark_session_unauthorized
+from .services import mark_login_suspicious
 from .validators import (
     EmailDomainBlacklistValidator,
     NameBlacklistValidator,
@@ -139,4 +139,4 @@ class AuthenticateForm(auth_forms.AuthenticationForm):
     def fake_password_provided(self, username, fake_password, real_password):
         """Do sth about unauthorized login attempt"""
         self.unauthorized_attempt = True
-        mark_session_unauthorized(self.request, username, fake_password, real_password)
+        mark_login_suspicious(self.request, username, fake_password, real_password)
