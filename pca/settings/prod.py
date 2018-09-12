@@ -10,11 +10,10 @@ https://docs.djangoproject.com/en/2.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.0/ref/settings/
 """
-import disposable_email_domains
 import django_heroku
 import dotenv
 
-from pca.utils.config import env_var, path, trueish, env_json_var
+from pca.utils.config import env_var, path, trueish
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -181,8 +180,8 @@ LOGGING['formatters']['verbose'] = {
 
 
 # Custom webapp configuration
-USER_EMAIL_DOMAIN_BLACKLIST = disposable_email_domains.blacklist
-USER_NAME_BLACKLIST = set(env_json_var('USER_NAME_BLACKLIST', ()))
+USER_EMAIL_DOMAIN_BLACKLIST = 'disposable_email_domains.blacklist'
+USER_NAME_BLACKLIST = 'django_registration.validators.DEFAULT_RESERVED_NAMES'
 OWNER_HOMEPAGE = env_var('OWNER_HOMEPAGE', 'https://github.com/pcah')
 OWNER_EMAIL = env_var('CONTACT_EMAIL', 'pca+{}@lhaze.name')
 GET_OWNER_EMAIL = lambda extension: OWNER_EMAIL.format(extension)  # noqa

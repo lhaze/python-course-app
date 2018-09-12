@@ -5,7 +5,7 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from .validators import EmailBlacklistValidator
+from .validators import EmailDomainBlacklistValidator
 
 
 class UserManager(auth_models.BaseUserManager):
@@ -46,7 +46,7 @@ class User(auth_models.AbstractBaseUser, auth_models.PermissionsMixin):
     NAME_MAX_LEN = 32
     EMAIL_VALIDATORS = [
         EmailValidator(),
-        EmailBlacklistValidator(),
+        EmailDomainBlacklistValidator(),
     ]
 
     email = models.EmailField(

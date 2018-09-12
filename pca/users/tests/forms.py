@@ -10,6 +10,9 @@ from ..forms import (
 )
 
 
+USER_NAME_BLACKLIST = ('admin', 'webmaster')
+
+
 @pytest.mark.django_db
 class TestUserCreationForm:
 
@@ -22,7 +25,7 @@ class TestUserCreationForm:
 
     @pytest.fixture(autouse=True)
     def settings(self, settings):
-        settings.USER_NAME_BLACKLIST = ('admin', 'webmaster')
+        settings.USER_NAME_BLACKLIST = 'pca.users.tests.forms.USER_NAME_BLACKLIST'
         return settings
 
     def test_success(self):

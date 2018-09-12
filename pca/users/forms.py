@@ -11,11 +11,16 @@ from django.contrib.auth import (
 )
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
+from django_registration import validators as django_registration_validators
 from xxhash import xxh64
 
 from pca.utils.forms import CrispyHelper
 from .services import mark_session_unauthorized
-from .validators import NameBlacklistValidator, NameUnicodeValidator
+from .validators import (
+    EmailDomainBlacklistValidator,
+    NameBlacklistValidator,
+    NameUnicodeValidator,
+)
 
 User = get_user_model()
 
@@ -37,6 +42,14 @@ class UserCreateForm(auth_forms.UserCreationForm):
     NAME_VALIDATORS = [
         NameBlacklistValidator(),
         NameUnicodeValidator(),
+        django_registration_validators.CaseInsensitiveUnique(
+            User, 'name', _('This name is already taken. Please choose another.')),
+    ]
+    EMAIL_VALIDATORS = [
+        django_registration_validators.CaseInsensitiveUnique(
+            User, 'email', _('This email is already registered. Please choose another.')),
+        django_registration_validators.validate_confusables_email,
+        EmailDomainBlacklistValidator(),
     ]
 
     name = NameField(
@@ -52,15 +65,8 @@ class UserCreateForm(auth_forms.UserCreationForm):
             self,
             field_class="textinput textInput",
             form_tag=False,
-            # layout=Layout(
-            #     'username',
-            #     self._password_field_key,
-            #     Div(
-            #         'password',
-            #         style='display: none'
-            #     ),
-            # )
         )
+        self.fields['email'].validators.extend(self.EMAIL_VALIDATORS)
 
 
 class AuthenticateForm(auth_forms.AuthenticationForm):

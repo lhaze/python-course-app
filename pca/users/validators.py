@@ -6,6 +6,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.utils.deconstruct import deconstructible
 from django.utils.translation import gettext_lazy as _
+from django.utils.module_loading import import_string
 
 
 @deconstructible
@@ -38,12 +39,12 @@ class BlacklistValidator:
         return value.rsplit('@', 1)[1]
 
 
-class EmailBlacklistValidator(BlacklistValidator):
+class EmailDomainBlacklistValidator(BlacklistValidator):
     message = _('Enter a valid email address.')
 
     @property
     def blacklist(self):
-        return settings.USER_EMAIL_DOMAIN_BLACKLIST
+        return import_string(settings.USER_EMAIL_DOMAIN_BLACKLIST)
 
     def get_validated_value(self, value):
         return value.rsplit('@', 1)[1]
@@ -54,7 +55,7 @@ class NameBlacklistValidator(BlacklistValidator):
 
     @property
     def blacklist(self):
-        return settings.USER_NAME_BLACKLIST
+        return import_string(settings.USER_NAME_BLACKLIST)
 
     def get_validated_value(self, value):
         return value

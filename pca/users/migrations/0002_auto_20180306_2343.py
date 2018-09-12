@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='user',
             name='email',
-            field=models.EmailField(max_length=254, unique=True, validators=[django.core.validators.EmailValidator(), pca.users.validators.EmailBlacklistValidator()], verbose_name='email address'),
+            field=models.EmailField(max_length=254, unique=True, validators=[django.core.validators.EmailValidator(), pca.users.validators.EmailDomainBlacklistValidator()], verbose_name='email address'),
         ),
         migrations.AlterField(
             model_name='user',

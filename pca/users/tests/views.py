@@ -18,7 +18,6 @@ class AuthTest(WebTest):
     # fixtures = ['users.json']
 
     def test_login_form(self):
-        self.renew_app()
         with mock.patch(
             'pca.users.forms.AuthenticateForm._password_field_key',
             new_callable=mock.PropertyMock
@@ -37,7 +36,6 @@ class AuthTest(WebTest):
         )
 
     def test_register_form(self):
-        self.renew_app()
         response = self.app.get(reverse('auth:register'))
         assert response.status_int == 200
         form = response.form
