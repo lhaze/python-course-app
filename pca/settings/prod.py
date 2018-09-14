@@ -179,6 +179,9 @@ LOGGING['formatters']['verbose'] = {
     'datefmt': '%Y-%m-%d %H:%M:%S',
 }
 
+FIXTURE_DIRS = (
+    'pca/core/fixtures/',
+)
 
 # Custom webapp configuration
 USER_EMAIL_DOMAIN_BLACKLIST = 'disposable_email_domains.blacklist'

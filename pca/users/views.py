@@ -35,10 +35,10 @@ class RegisterView(ActionView):
             raise
 
 
-class ActivationView(ActionGetView):
+class ActivateUserView(ActionGetView):
 
     login_required = False
-    template_name = 'django_registration/activation_failed.html'
+    template_name = 'users/activation_failed.j2'
     success_url = 'users:me'
 
     def action(self):

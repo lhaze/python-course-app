@@ -80,7 +80,7 @@ class AuthenticateForm(auth_forms.AuthenticationForm):
         strip=False,
         widget=forms.PasswordInput,
     )
-    unauthorized_attempt = False
+    is_attempt_suspicious = False
 
     def __init__(self, request=None, *args, **kwargs):
         """
@@ -138,5 +138,5 @@ class AuthenticateForm(auth_forms.AuthenticationForm):
 
     def fake_password_provided(self, username, fake_password, real_password):
         """Do sth about unauthorized login attempt"""
-        self.unauthorized_attempt = True
+        self.is_attempt_suspicious = True
         mark_login_suspicious(self.request, username, fake_password, real_password)
