@@ -37,12 +37,12 @@ class LoginTest(BaseMixin, WebTest):
         ) as password_field_key:
             password_field_key.return_value = self.real_password_field_name
             response = self.app.get(reverse('auth:login'))
-        assert response.status_int == 200
-        form = response.form
-        form['username'] = 'ACTIVE@example.com'
-        form[self.real_password_field_name] = 'active'
-        response = form.submit()
-        response = response.follow()
+            assert response.status_int == 200
+            form = response.form
+            form['username'] = 'ACTIVE@example.com'
+            form[self.real_password_field_name] = 'active'
+            response = form.submit()
+            response.follow()
 
 
 class RegisterTest(BaseMixin, WebTest):

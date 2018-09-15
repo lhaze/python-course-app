@@ -121,6 +121,7 @@ class AuthenticateForm(auth_forms.AuthenticationForm):
         real_password = self.cleaned_data.get(self._password_field_key)
         fake_password = self.cleaned_data.get('password')
 
+        import pdb; pdb.set_trace()
         if fake_password:
             self.fake_password_provided(username, fake_password, real_password)
         elif username is not None and real_password:
