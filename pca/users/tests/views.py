@@ -42,7 +42,7 @@ class LoginTest(BaseMixin, WebTest):
             form['username'] = 'ACTIVE@example.com'
             form[self.real_password_field_name] = 'active'
             response = form.submit()
-            response.follow()
+            assert response.location == reverse('users:dashboard')
 
 
 class RegisterTest(BaseMixin, WebTest):

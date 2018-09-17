@@ -4,5 +4,5 @@ from django.views.generic.base import TemplateView
 
 app_name = 'users'
 urlpatterns = [
-    path('dashboard', TemplateView.as_view(template_name='dashboard.j2'), name='dashboard'),
+    path('dashboard', TemplateView.as_view(template_name='users/dashboard.j2'), name='dashboard'),
 ]
