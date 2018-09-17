@@ -11,3 +11,4 @@ django-jinja==2.4.1
 disposable-email-domains==0.0.21
 confusable-homoglyphs==3.0.0
 xxhash==1.0.1
+PyYaml==3.13
