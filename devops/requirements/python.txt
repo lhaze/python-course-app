@@ -8,6 +8,7 @@ django-registration==3.0
 jinja2==2.10
 django-jinja==2.4.1
 
+python-business-logic==0.2.0
 disposable-email-domains==0.0.21
 confusable-homoglyphs==3.0.0
 xxhash==1.0.1
