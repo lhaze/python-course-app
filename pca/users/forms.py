@@ -14,8 +14,8 @@ from django.utils.translation import gettext_lazy as _
 from django_registration import validators as django_registration_validators
 from xxhash import xxh64
 
-from pca.utils.forms import CrispyHelper
-from .services import mark_login_suspicious
+from pca.utils.forms import CrispyHelper, CommandFormMixin
+from . import services
 from .validators import (
     EmailDomainBlacklistValidator,
     NameBlacklistValidator,
@@ -31,7 +31,7 @@ class NameField(forms.CharField):
         return unicodedata.normalize('NFKC', value)
 
 
-class UserCreateForm(auth_forms.UserCreationForm):
+class UserCreateForm(CommandFormMixin, auth_forms.UserCreationForm):
 
     class Meta:
         model = User
@@ -67,6 +67,11 @@ class UserCreateForm(auth_forms.UserCreationForm):
             form_tag=False,
         )
         self.fields['email'].validators.extend(self.EMAIL_VALIDATORS)
+
+    def command(self, site, request_scheme: str):
+        user = self.save(commit=False)
+        import pdb; pdb.set_trace()
+        return services.registration.register(user, site, request_scheme)
 
 
 class AuthenticateForm(auth_forms.AuthenticationForm):
@@ -138,4 +143,4 @@ class AuthenticateForm(auth_forms.AuthenticationForm):
     def fake_password_provided(self, username, fake_password, real_password):
         """Do sth about unauthorized login attempt"""
         self.is_attempt_suspicious = True
-        mark_login_suspicious(self.request, username, fake_password, real_password)
+        services.login.mark_login_suspicious(self.request, username, fake_password, real_password)

@@ -120,7 +120,8 @@ class TestAuthenticateForm:
 
     @pytest.fixture
     def mark_suspicious(self):
-        with mock.patch('pca.users.forms.mark_login_suspicious') as mocked_mark_suspicious:
+        with mock.patch('pca.users.services.login.mark_login_suspicious') \
+                as mocked_mark_suspicious:
             yield mocked_mark_suspicious
 
     @pytest.fixture
@@ -162,81 +163,3 @@ class TestAuthenticateForm:
         assert not form.is_attempt_suspicious
         mark_suspicious.assert_not_called()
         assert get_error_codes(form) == {'__all__': ['inactive']}
-
-
-@pytest.mark.django_db
-class TestUserCreationForm:
-
-    data = {
-        'email': 'some_user@pca.org',
-        'name': 'some_user',
-        'password1': 'some1password!',
-        'password2': 'some1password!',
-    }
-
-    @pytest.fixture(autouse=True)
-    def settings(self, settings):
-        settings.USER_NAME_BLACKLIST = 'pca.users.tests.forms.USER_NAME_BLACKLIST'
-        return settings
-
-    def test_success(self):
-        form = UserCreateForm(self.data)
-        assert form.is_valid()
-        user = form.save(commit=False)
-        assert user.email == self.data['email']
-        assert user._password == self.data['password1']
-
-    def test_name_blacklist(self):
-        data = {**self.data, 'name': 'admin'}
-        form = UserCreateForm(data)
-        assert not form.is_valid()
-        assert get_error_codes(form) == {'name': ['blacklist']}
-
-    def test_name_too_short(self):
-        data = {**self.data, 'name': 'adm'}
-        form = UserCreateForm(data)
-        assert not form.is_valid()
-        assert get_error_codes(form) == {'name': ['min_length']}
-
-    def test_name_with_homoglyph(self):
-        """Name has a confusable homoglyph -- it should be error"""
-        data = {**self.data, 'name': 'Alloρ'}  # greek ro which might be confusing with latin p
-        form = UserCreateForm(data)
-        assert not form.is_valid()
-        assert get_error_codes(form) == {'name': ['mixed_unicode']}
-
-    def test_password_mismatch(self):
-        data = {**self.data, 'password2': 'password2'}
-        form = UserCreateForm(data)
-        assert not form.is_valid()
-        assert get_error_codes(form) == {'password2': ['password_mismatch']}
-
-    def test_password_too_similar(self):
-        data = {**self.data, 'password1': 'user@pca.org', 'password2': 'user@pca.org'}
-        form = UserCreateForm(data)
-        assert not form.is_valid()
-        assert get_error_codes(form) == {'password2': ['password_too_similar']}
-
-    def test_password_too_short(self):
-        data = {**self.data, 'password1': 'asdzxc', 'password2': 'asdzxc'}
-        form = UserCreateForm(data)
-        assert not form.is_valid()
-        assert get_error_codes(form) == {'password2': ['password_too_short']}
-
-    def test_password_too_common(self):
-        data = {**self.data, 'password1': 'password', 'password2': 'password'}
-        form = UserCreateForm(data)
-        assert not form.is_valid()
-        assert get_error_codes(form) == {'password2': ['password_too_common']}
-
-    def test_password_numerics_only(self):
-        data = {**self.data, 'password1': '18273645', 'password2': '18273645'}
-        form = UserCreateForm(data)
-        assert not form.is_valid()
-        assert get_error_codes(form) == {'password2': ['password_entirely_numeric']}
-
-    def test_email_blacklist(self):
-        data = {**self.data, 'email': 'some_guy@10mail.org'}
-        form = UserCreateForm(data)
-        assert not form.is_valid()
-        assert get_error_codes(form) == {'email': ['blacklist']}
