@@ -68,7 +68,7 @@ class UserCreateForm(CommandFormMixin, auth_forms.UserCreationForm):
         )
         self.fields['email'].validators.extend(self.EMAIL_VALIDATORS)
 
-    def command(self):
+    def command(self, site, request_scheme: str):
         user = self.save(commit=False)
         return services.registration.register(user, site, request_scheme)
 

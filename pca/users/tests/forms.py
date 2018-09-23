@@ -120,7 +120,7 @@ class TestAuthenticateForm:
 
     @pytest.fixture
     def mark_suspicious(self):
-        with mock.patch('pca.users.forms.mark_login_suspicious') as mocked_mark_suspicious:
+        with mock.patch('pca.users.services.login.mark_login_suspicious') as mocked_mark_suspicious:
             yield mocked_mark_suspicious
 
     @pytest.fixture
