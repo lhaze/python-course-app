@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from confusable_homoglyphs import confusables
 from django.conf import settings
+from django.contrib.sites.models import Site
 from django.utils.translation import gettext_lazy as _
 
 from business_logic import (
@@ -30,7 +31,7 @@ class RegistrationErrors(LogicErrors):
 
 
 @validator
-def is_registration_opened():
+def is_registration_open():
     if not getattr(settings, 'REGISTRATION_OPEN', True):
         raise RegistrationErrors.REGISTRATION_CLOSED
 
@@ -73,14 +74,15 @@ def is_non_confusable_email(value):
 @validator
 def can_register(user, *args, **kwargs):
     return all((
-        is_registration_opened(),
+        is_registration_open(),
+
         is_non_confusable_name(user.name),
         is_non_confusable_email(user.email)
     ))
 
 
 @validated_by(can_register)
-def register(user, site, request_scheme):
+def register(user, site: Site, request_scheme: str):
     new_user = create_inactive_user(user, site, request_scheme)
     signals.user_registered.send(new_user)
     return new_user

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import abc
+import typing as t
 
 from business_logic import LogicException
 from crispy_forms.helper import FormHelper
@@ -14,16 +14,20 @@ class CrispyHelper(FormHelper):
         self.__dict__.update(kwargs)
 
 
-class CommandFormMixin(metaclass=abc.ABCMeta):
+class CommandFormMixin():
 
-    command_result = None
-    error_map = None
+    result = None
+    error_map: t.Mapping[str, t.List[str]] = None
 
-    @abc.abstractmethod
-    def command(self):
+    def __init__(self, command_kwargs=None, **kwargs):
+        self.command_kwargs = command_kwargs or {}
+        super().__init__(**kwargs)
+
+    def command(self, **kwargs):
         """Hook for a command call"""
+        raise NotImplementedError
 
-    def map_error(self, error):
+    def map_error(self, error: LogicException) -> bool:
         error_code = error.error_code
         mapped_field = self.error_map and self.error_map.get(error_code)
         if not mapped_field:
@@ -36,7 +40,7 @@ class CommandFormMixin(metaclass=abc.ABCMeta):
     def _post_clean(self):
         super()._post_clean()
         try:
-            self.command_result = self.command()
+            self.result = self.command(**self.command_kwargs)
         except LogicException as e:
             is_mapped = self.map_error(e)
             if not is_mapped:
