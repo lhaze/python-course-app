@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
+import pytest
 from unittest import mock
 
 from django.urls import reverse
 from django_webtest import WebTest
 
 
+@pytest.mark.usefixtures('users')
 class BaseMixin(WebTest):
-    fixtures = ['example_users.yaml']
     real_password_field_name = 'real_password_field'
 
 

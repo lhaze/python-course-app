@@ -51,7 +51,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'django_jinja',
 
-    'pca.core',
+    'pca.main',
     'pca.users',
 ]
 
@@ -81,7 +81,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
 
-                'pca.core.context_processors.settings',
+                'pca.main.context_processors.settings',
             ],
         }
     },
@@ -96,7 +96,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
 
-                'pca.core.context_processors.settings',
+                'pca.main.context_processors.settings',
             ],
         },
     },
@@ -181,7 +181,7 @@ LOGGING['formatters']['verbose'] = {
 }
 
 FIXTURE_DIRS = (
-    'pca/core/fixtures/',
+    'pca/main/fixtures/',
 )
 
 # Custom webapp configuration
