@@ -27,7 +27,7 @@ class RegisterView(CommandView):
     request = None
     login_required = False
     form_class = forms.UserCreateForm
-    template_name = 'users/sign_up.j2'
+    template_name = 'users/register.j2'
     success_url = settings.LOGIN_REDIRECT_URL
     disallowed_url = reverse_lazy('auth:registration_blocked')
 
