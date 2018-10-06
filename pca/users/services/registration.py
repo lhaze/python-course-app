@@ -11,23 +11,17 @@ from business_logic import (
     validator,
 )
 
+from pca.utils.signal import BoundSignal
 from .activation import send_activation_email
-from .. import signals
 
 
 class RegistrationErrors(LogicErrors):
     REGISTRATION_CLOSED = LogicException(
-        _("Signup process is closed. Email us if you want to sign up anyway."),
-        error_code='registration_closed'
-    )
+        _("Signup process is closed. Email us if you want to sign up anyway."))
     CONFUSABLE_NAME = LogicException(
-        _("This name cannot be registered. Please choose a different name."),
-        error_code='confusable_name'
-    )
+        _("This name cannot be registered. Please choose a different name."))
     CONFUSABLE_EMAIL = LogicException(
-        _("This email address cannot be registered. Please supply a different email address."),
-        error_code='confusable_email'
-    )
+        _("This email address cannot be registered. Please supply a different email address."))
 
 
 @validator
@@ -82,9 +76,9 @@ def can_register(user, *args, **kwargs):
 
 
 @validated_by(can_register)
-def register(user, site: Site, request_scheme: str):
+def register(user, site: Site, request_scheme: str, user_registered: BoundSignal):
     new_user = create_inactive_user(user, site, request_scheme)
-    signals.user_registered.send(new_user)
+    user_registered.send(user=new_user)
     return new_user
 
 

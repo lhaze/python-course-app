@@ -15,6 +15,7 @@ from django_registration import validators as django_registration_validators
 from xxhash import xxh64
 
 from pca.utils.forms import CrispyHelper, CommandFormMixin
+from pca.utils.signal import BoundSignal
 from . import services
 from .validators import (
     EmailDomainBlacklistValidator,
@@ -68,9 +69,9 @@ class UserCreateForm(CommandFormMixin, auth_forms.UserCreationForm):
         )
         self.fields['email'].validators.extend(self.EMAIL_VALIDATORS)
 
-    def command(self, site, request_scheme: str):
+    def command(self, site, request_scheme: str, user_registered: BoundSignal):
         user = self.save(commit=False)
-        return services.registration.register(user, site, request_scheme)
+        return services.registration.register(user, site, request_scheme, user_registered)
 
 
 class AuthenticateForm(auth_forms.AuthenticationForm):

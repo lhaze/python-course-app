@@ -23,3 +23,8 @@ def env_json_var(key, default=None):
 
 def trueish(value):
     return bool(value) and str(value).lower() not in ['false', '0']
+
+
+def get_setting(name, default=None):
+    from django.conf import settings
+    return getattr(settings, name, default)

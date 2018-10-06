@@ -7,8 +7,6 @@ from django.http.response import HttpResponseRedirect
 from django.utils.encoding import force_text
 from django.views.generic.edit import FormView
 
-from business_logic import LogicException
-
 from . import forms
 
 
@@ -21,7 +19,7 @@ class PermissionMixin:
     redirect_field_name = REDIRECT_FIELD_NAME
     result = None
 
-    def is_operation_allowed(self):
+    def is_command_allowed(self):
         return True
 
     def has_permission(self):
@@ -46,7 +44,7 @@ class PermissionMixin:
         raise PermissionDenied(self.get_permission_denied_message())
 
     def dispatch(self, *args, **kwargs):
-        if not self.is_operation_allowed():
+        if not self.is_command_allowed():
             return self.handle_command_disallowed()
         elif not self.has_permission():
             return self.handle_no_permission()
@@ -83,14 +81,15 @@ class CommandGetView(CommandView):
         return force_text(self.success_url)
 
     def get(self, request, *args, **kwargs):
-        extra_context = {}
+        extra_context = {'error': None}
         try:
             self.result = self.command()
-        except LogicException as e:
-            extra_context['activation_error'] = {
-                'message': e.message,
-                'code': e.code,
-                'params': e.params
+        except Exception as e:
+            extra_context = {
+                'error': {
+                    'message': e.args[0],
+                    'code': getattr(e, 'error_code', '')
+                }
             }
         else:
             return HttpResponseRedirect(force_text(self.get_success_url()))

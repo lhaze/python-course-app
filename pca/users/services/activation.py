@@ -1,32 +1,29 @@
 # -*- coding: utf-8 -*-
 from django.contrib.auth import get_user_model
 from django.core import signing
-from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 
 from business_logic import LogicErrors, LogicException
 
-from .. import signals
+from pca.utils.config import get_setting
 
 User = get_user_model()
 
 
-_REGISTRATION_SALT = getattr(settings, 'REGISTRATION_SALT', 'registration')
+_REGISTRATION_SALT = get_setting('REGISTRATION_SALT', 'registration')
+_ACCOUNT_ACTIVATION_DAYS = get_setting('ACCOUNT_ACTIVATION_DAYS', 30)
 _EMAIL_SUBJECT_TEMPLATE = ''
 _EMAIL_BODY_TEMPLATE = ''
+_DEFAULT_FROM_EMAIL = get_setting('GET_OWNER_EMAIL')
 
 
 class ActivationErrors(LogicErrors):
     ALREADY_ACTIVATED = LogicException(
-        _("The account you tried to activate has already been activated."),
-        error_code='already_activated')
-    BAD_USERNAME = LogicException(
-        _("The account you attempted to activate is invalid."), error_code='bad_username')
-    TOKEN_EXPIRED = LogicException(
-        _("This account has expired."), error_code='bad_username')
-    INVALID_TOKEN = LogicException(
-        _("The activation token you provided is invalid: {token}"), error_code='expired')
+        _("The account you tried to activate has already been activated."))
+    BAD_USERNAME = LogicException(_("The account you attempted to activate is invalid."))
+    TOKEN_EXPIRED = LogicException(_("This account has expired."))
+    INVALID_TOKEN = LogicException(_("The activation token you provided is invalid: {token}"))
 
 
 def send_activation_email(user, site, request_scheme):
@@ -40,7 +37,7 @@ def send_activation_email(user, site, request_scheme):
         'user': user,
         'scheme': request_scheme,
         'activation_token': activation_token,
-        'expiration_days': settings.ACCOUNT_ACTIVATION_DAYS,
+        'expiration_days': _ACCOUNT_ACTIVATION_DAYS,
         'site': site,
     }
     subject = render_to_string(
@@ -54,7 +51,7 @@ def send_activation_email(user, site, request_scheme):
         template_name=_EMAIL_BODY_TEMPLATE,
         context=context,
     )
-    user.email_user(subject, message, settings.DEFAULT_FROM_EMAIL)
+    user.email_user(subject, message, _DEFAULT_FROM_EMAIL)
 
 
 def _get_activation_token(user):
@@ -65,23 +62,12 @@ def _get_activation_token(user):
     )
 
 
-def _get_email_context(activation_token, site):
-    """Build the template context used for the activation email."""
-    scheme = 'https' if request.is_secure() else 'http'
-    return {
-        'scheme': scheme,
-        'activation_token': activation_token,
-        'expiration_days': settings.ACCOUNT_ACTIVATION_DAYS,
-        'site': site,
-    }
-
-
-def activate(activation_token):
+def activate(activation_token, user_activated):
     username = validate_activation_token(activation_token)
     user = get_user_to_activate(username)
     user.is_active = True
     user.save()
-    signals.user_activated.send(user)
+    user_activated.send(user)
     return user
 
 
@@ -95,7 +81,7 @@ def validate_activation_token(activation_token):
         username = signing.loads(
             activation_token,
             salt=_REGISTRATION_SALT,
-            max_age=settings.ACCOUNT_ACTIVATION_DAYS * 86400
+            max_age=_ACCOUNT_ACTIVATION_DAYS * 86400
         )
         return username
     except signing.SignatureExpired:
